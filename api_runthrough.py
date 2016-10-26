@@ -1,7 +1,7 @@
-from api_helpers import get_token_and_id
+from api_helpers import get_token_and_id, upload_bucket
+
 import sys
-
-
+files = {'file': open('addresses.csv', 'rb')}
 try:
     EMAIL = sys.argv[1]  # Hard Code username here if you do not wish to enter it on the command line
     PASSWD = sys.argv[2] # Hard Code password here if you do not wish to enter it on the command line
@@ -10,10 +10,30 @@ except IndexError:
     sys.exit()
 
 CRED = {
-    "email": EMAIL,
+    "username": EMAIL,
     "password": PASSWD
     }
 
 user_data = get_token_and_id(CRED)
+HEADERS = {
+    "Authorization": "Bearer " + user_data[0]
+    }
 
-print user_data
+# Create a bucket
+
+bucket_data = {
+    "name": "Test Bucket",
+    "type": 10,
+    "orgId": "acme"
+}
+
+print "\nUpload Bucket (addresses):"
+print "Here we take a sample csv (testcsv.csv) and upload it to the portal."
+print "\nPOST https://api-dev.eltoro.com/upload/bucket"
+print "{\n  \"name\": \"Test Bucket\"\n  \"type\": 10\n  \"file\": <file to upload>\n}\n"
+
+print "The response is the id of the created Bucket object"
+bucket_resp = upload_bucket(bucket_data, HEADERS, files)
+print bucket_resp
+
+
